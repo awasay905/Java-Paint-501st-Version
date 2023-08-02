@@ -1,5 +1,6 @@
 package uicomponents.buttons;
 
+import res.ResourceManager;
 import uicomponents.MouseListener;
 
 import javax.swing.*;
@@ -13,7 +14,7 @@ public class ColorButton extends ToggleButton {
     }
 
     public ColorButton(int x, int y, int width, int height, Color color, MouseListener mouseListener) {
-        super(x, y, width, height, new ImageIcon("empty").getImage(), new ImageIcon("empty").getImage(), "", -1, mouseListener);
+        super(x, y, width, height, ResourceManager.empty,ResourceManager.empty, "", -1, mouseListener);
         setBackgroundColor(color);
     }
 

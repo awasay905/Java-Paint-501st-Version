@@ -1,7 +1,10 @@
 package swingComponents;
 
+import res.ResourceManager;
+
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class SwingTimerEx extends JFrame {
 
@@ -10,6 +13,7 @@ public class SwingTimerEx extends JFrame {
     }
 
     public static void main(String[] args) {
+        ResourceManager.init();
         EventQueue.invokeLater(() -> {
             SwingTimerEx ex = new SwingTimerEx();
             ex.setVisible(true);

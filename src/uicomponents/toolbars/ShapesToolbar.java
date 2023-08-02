@@ -1,5 +1,6 @@
 package uicomponents.toolbars;
 
+import res.ResourceManager;
 import uicomponents.Shortcuts;
 import uicomponents.buttons.ActiveButton;
 import uicomponents.buttons.ToggleButton;
@@ -17,12 +18,12 @@ public class ShapesToolbar extends Toolbar {
         strokeSize = 5;
         setBackgroundColor(Color.GRAY.brighter());
 
-        ToggleButton circle = new ToggleButton(x+10, y+5, 30, 30, new ImageIcon("src/res/pressed/circle-border.png").getImage(), new ImageIcon("src/res/depressed/circle-border.png").getImage(), "", Shortcuts.circle, this::circleClicked);
-        ToggleButton rectangle = new ToggleButton(x+45, y+5, 30, 30, new ImageIcon("src/res/pressed/rectangle.png").getImage(), new ImageIcon("src/res/depressed/rectangle.png").getImage(), "", Shortcuts.rectangle, this::rectangleClicked);
-        ToggleButton rightAngleTriangle = new ToggleButton(x+80, y+5, 30, 30, new ImageIcon("src/res/pressed/right-angle-triangle.png").getImage(), new ImageIcon("src/res/depressed/right-angle-triangle.png").getImage(), "", Shortcuts.triangle, this::rightAngleTriangleClicked);
-        ToggleButton hexagon = new ToggleButton(x+10, y + 45, 30, 30, new ImageIcon("src/res/pressed/hexagon.png").getImage(), new ImageIcon("src/res/depressed/hexagon.png").getImage(), "", Shortcuts.hexagon, this::hexagonClicked);
-        ToggleButton pentagram = new ToggleButton(x+45, y + 45, 30, 30, new ImageIcon("src/res/pressed/pentagram.png").getImage(), new ImageIcon("src/res/depressed/pentagram.png").getImage(), "", Shortcuts.pentagram, this::pentagramClicked);
-        ToggleButton equilateralTriangle = new ToggleButton(x+80, y + 45, 30, 30, new ImageIcon("src/res/pressed/equilateral-triangle.png").getImage(), new ImageIcon("src/res/depressed/equilateral-triangle.png").getImage(), "", Shortcuts.equilateralTriangle, this::equilateralTriangleClicked);
+        ToggleButton circle = new ToggleButton(x+10, y+5, 30, 30, ResourceManager.circleBorderPressed, ResourceManager.circleBorderDepressed, "", Shortcuts.circle, this::circleClicked);
+        ToggleButton rectangle = new ToggleButton(x+45, y+5, 30, 30, ResourceManager.rectanglePressed, ResourceManager.rectangleDepressed, "", Shortcuts.rectangle, this::rectangleClicked);
+        ToggleButton rightAngleTriangle = new ToggleButton(x+80, y+5, 30, 30, ResourceManager.rightAngleTrianglePressed, ResourceManager.rightAngleTriangleDepressed, "", Shortcuts.triangle, this::rightAngleTriangleClicked);
+        ToggleButton hexagon = new ToggleButton(x+10, y + 45, 30, 30, ResourceManager.hexagonPressed, ResourceManager.hexagonDepressed, "", Shortcuts.hexagon, this::hexagonClicked);
+        ToggleButton pentagram = new ToggleButton(x+45, y + 45, 30, 30, ResourceManager.pentagramPressed,ResourceManager.pentagramDepressed, "", Shortcuts.pentagram, this::pentagramClicked);
+        ToggleButton equilateralTriangle = new ToggleButton(x+80, y + 45, 30, 30, ResourceManager.equilateralTrianglePressed, ResourceManager.equilateralTriangleDepressed, "", Shortcuts.equilateralTriangle, this::equilateralTriangleClicked);
 
         add(circle);
         add(rectangle);
@@ -38,7 +39,7 @@ public class ShapesToolbar extends Toolbar {
         pentagram.setHelpText("Pentagram " + "(" + (char) Shortcuts.pentagram + ")");
         equilateralTriangle.setHelpText("Equilateral Triangle " + "(" + (char) Shortcuts.equilateralTriangle + ")");
 
-        ToggleButton stokeWidthSelector = new ActiveButton(x+120, y+5, 50, 70, new ImageIcon("src/res/pressed/stroke-width.png").getImage(), new ImageIcon("src/res/depressed/stroke-width.png").getImage(), "", Shortcuts.changeStroke, this::strokeWidthClicked);
+        ToggleButton stokeWidthSelector = new ActiveButton(x+120, y+5, 50, 70,ResourceManager.strokeWidthPressed, ResourceManager.strokeWidthDepressed, "", Shortcuts.changeStroke, this::strokeWidthClicked);
         add(stokeWidthSelector);
 
         stokeWidthSelector.setHelpText("Stroke size" + "(" + (char) Shortcuts.changeStroke + ")" + ": " + getStrokeSize());

@@ -1,5 +1,6 @@
 package uicomponents.toolbars;
 
+import res.ResourceManager;
 import uicomponents.Shortcuts;
 import uicomponents.buttons.ActiveButton;
 import uicomponents.buttons.ColorButton;
@@ -18,8 +19,8 @@ public class ColorToolbar extends Toolbar {
         super(x, y, width, height);
         setBackgroundColor(Color.GRAY.brighter());
 
-        Image colorBoxDep = new ImageIcon("src/res/depressed/color-box.png").getImage();
-        Image colorBoxPre = new ImageIcon("src/res/pressed/color-box.png").getImage();
+        Image colorBoxDep = ResourceManager.colorBoxDepressed;
+        Image colorBoxPre = ResourceManager.colorBoxPressed;
 
         ToggleButton color1 = new ColorButton(x+130, y+5, 30, 30, colorBoxPre, colorBoxDep, Color.WHITE, Shortcuts.color0, () -> {});
         ToggleButton color2 = new ColorButton(x+165, y+5, 30, 30, colorBoxPre, colorBoxDep, Color.BLACK, Shortcuts.color1, () -> {});
@@ -43,9 +44,9 @@ public class ColorToolbar extends Toolbar {
         add(color9);
         add(color10);
 
-        ToggleButton colorSelector = new ActiveButton(x+310, y+5, 50, 70, new ImageIcon("src/res/pressed/palette.png").getImage(), new ImageIcon("src/res/depressed/palette.png").getImage(), "", Shortcuts.colorGradient, this::colorSelectorCLicked);
-        ToggleButton fillColorSelector = new ColorButton(x+10, y+5, 50, 70, new ImageIcon("src/res/pressed/fill-color.png").getImage(), new ImageIcon("src/res/depressed/fill-color.png").getImage(), Color.WHITE, -1, this::fillColorSelectorClicked);
-        ToggleButton strokeColorSelector = new ColorButton(x+70, y+5, 50, 70, new ImageIcon("src/res/pressed/stroke-color.png").getImage(), new ImageIcon("src/res/depressed/stroke-color.png").getImage(), Color.GRAY, -1, this::strokeColorSelectorClicked);
+        ToggleButton colorSelector = new ActiveButton(x+310, y+5, 50, 70,ResourceManager.palettePressed,ResourceManager.paletteDepressed, "", Shortcuts.colorGradient, this::colorSelectorCLicked);
+        ToggleButton fillColorSelector = new ColorButton(x+10, y+5, 50, 70,ResourceManager.fillColorPressed, ResourceManager.fillColorDepressed, Color.WHITE, -1, this::fillColorSelectorClicked);
+        ToggleButton strokeColorSelector = new ColorButton(x+70, y+5, 50, 70, ResourceManager.strokeColorPressed,ResourceManager.strokeColorDepressed, Color.GRAY, -1, this::strokeColorSelectorClicked);
 
         add(colorSelector);
         add(fillColorSelector);

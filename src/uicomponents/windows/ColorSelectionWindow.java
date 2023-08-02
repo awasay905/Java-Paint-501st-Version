@@ -1,5 +1,6 @@
 package uicomponents.windows;
 
+import res.ResourceManager;
 import uicomponents.ColorGradient;
 import uicomponents.LuminosityGradient;
 import uicomponents.MouseListener;
@@ -45,7 +46,7 @@ public class ColorSelectionWindow extends Window {
         ColorGradient.getInstance().generateColor(ColorGradient.getInstance().getX(), ColorGradient.getInstance().getY(), 0.8f);
         LuminosityGradient.getInstance().generateLuminosity(LuminosityGradient.getInstance().getX(), LuminosityGradient.getInstance().getY());
 
-        setColor = new ActiveButton(x + 20 + 256 + 15 + 10 - 40 - 40 + 5 - 5, y + 256 + 20 + getTitlebarHeight() + 20, 40 + 40 + 6, 50, new ImageIcon("empty").getImage(), new ImageIcon("empty").getImage(), "SET", -1, new MouseListener() {
+        setColor = new ActiveButton(x + 20 + 256 + 15 + 10 - 40 - 40 + 5 - 5, y + 256 + 20 + getTitlebarHeight() + 20, 40 + 40 + 6, 50, ResourceManager.empty, ResourceManager.empty, "SET", -1, new MouseListener() {
             @Override
             public void onClick() {
                 currentColor = selectedColor;

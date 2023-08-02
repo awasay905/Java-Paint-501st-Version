@@ -1,5 +1,6 @@
 package uicomponents.toolbars;
 
+import res.ResourceManager;
 import shapes.Shape;
 import uicomponents.Shortcuts;
 import uicomponents.Textbox;
@@ -29,10 +30,10 @@ public class LayerToolbar extends Toolbar {
         title = new Textbox(x, y, width, 30, "Layers", Color.BLACK, false);
         counter = 0;
 
-        ActiveButton addLayer = new ActiveButton(x + 10, y + 5, 20, 20, new ImageIcon("src/res/pressed/add-layer.png").getImage(), new ImageIcon("src/res/depressed/add-layer.png").getImage(), "", Shortcuts.addLayer, this::addLayer);
-        ActiveButton removeLayer = new ActiveButton(x + 10 + 5 + 20, y + 5, 20, 20, new ImageIcon("src/res/pressed/remove-layer.png").getImage(), new ImageIcon("src/res/depressed/remove-layer.png").getImage(), "", Shortcuts.removeLayer, this::removeLayer);
-        ActiveButton moveUp = new ActiveButton(x + width - 10 - 20, y + 5, 20, 20, new ImageIcon("src/res/pressed/layer-up.png").getImage(), new ImageIcon("src/res/depressed/layer-up.png").getImage(), "", Shortcuts.moveLayerUp, this::moveUp);
-        ActiveButton moveDown = new ActiveButton(x + width - 10 - 20 - 5 - 20, y + 5, 20, 20, new ImageIcon("src/res/pressed/layer-down.png").getImage(), new ImageIcon("src/res/depressed/layer-down.png").getImage(), "", Shortcuts.moveLayerDown, this::moveDown);
+        ActiveButton addLayer = new ActiveButton(x + 10, y + 5, 20, 20, ResourceManager.addLayerPressed,ResourceManager.addLayerDepressed, "", Shortcuts.addLayer, this::addLayer);
+        ActiveButton removeLayer = new ActiveButton(x + 10 + 5 + 20, y + 5, 20, 20, ResourceManager.removeLayerPressed, ResourceManager.removeLayerDepressed, "", Shortcuts.removeLayer, this::removeLayer);
+        ActiveButton moveUp = new ActiveButton(x + width - 10 - 20, y + 5, 20, 20,ResourceManager.layerUpPressed, ResourceManager.layerUpDepressed, "", Shortcuts.moveLayerUp, this::moveUp);
+        ActiveButton moveDown = new ActiveButton(x + width - 10 - 20 - 5 - 20, y + 5, 20, 20, ResourceManager.layerDownPressed, ResourceManager.layerDownDepressed, "", Shortcuts.moveLayerDown, this::moveDown);
 
         addLayer.setHelpText("Add Layer " + "(" + (char) Shortcuts.addLayer + ")");
         removeLayer.setHelpText("Remove Layer " + "(" + (char) Shortcuts.removeLayer + ")");
