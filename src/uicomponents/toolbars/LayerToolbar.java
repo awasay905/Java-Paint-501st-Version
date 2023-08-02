@@ -155,12 +155,12 @@ public class LayerToolbar extends Toolbar {
     public void onClick(int x, int y) {
         layerActionButtons.onClick(x, y);
         for (ToggleButton b : getButtons()) {
-            if (b.isClicked(x, y)) {
+            if (b.isClicked(x, y)) { //If a layer is clicked, it makes it active and sets it as selected layer
                 b.onClick(x, y);
                 selectedLayer = (LayerButton) b;
                 selectedLayer.setActive(b.isPressed());
-                if (!b.isPressed()) selectedLayer = (LayerButton) getButtons().get(0);
-            } else {
+               // if (!b.isPressed()) selectedLayer = (LayerButton) getButtons().get(0); //there will be no unselected layer
+            } else { //It sets all other layers to false.
                 b.setPressed(false);
                 ((LayerButton) b).setActive(false);
             }
