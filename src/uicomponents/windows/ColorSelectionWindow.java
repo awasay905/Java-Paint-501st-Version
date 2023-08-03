@@ -43,7 +43,7 @@ public class ColorSelectionWindow extends Window {
         LuminosityGradient.getInstance().setX(ColorGradient.getInstance().getX() + 256 + 15);
         LuminosityGradient.getInstance().setY(ColorGradient.getInstance().getY());
 
-        ColorGradient.getInstance().generateColor(ColorGradient.getInstance().getX(), ColorGradient.getInstance().getY(), 0.8f);
+        ColorGradient.getInstance().generateColor(0.8f);
         LuminosityGradient.getInstance().generateLuminosity(LuminosityGradient.getInstance().getX(), LuminosityGradient.getInstance().getY());
 
         setColor = new ActiveButton(x + 20 + 256 + 15 + 10 - 40 - 40 + 5 - 5, y + 256 + 20 + getTitlebarHeight() + 20, 40 + 40 + 6, 50, ResourceManager.empty, ResourceManager.empty, "SET", -1, new MouseListener() {
@@ -105,7 +105,7 @@ public class ColorSelectionWindow extends Window {
             }
 
             if (LuminosityGradient.getInstance().luminosityIsClicked(x, y)) {
-                ColorGradient.getInstance().generateColor(ColorGradient.getInstance().getX(), ColorGradient.getInstance().getY(), LuminosityGradient.getInstance().getColorButtons()[y - LuminosityGradient.getInstance().getY()].getBackgroundColor().getBlue() / 256.0f);
+                ColorGradient.getInstance().generateColor( LuminosityGradient.getInstance().getColorButtons()[y - LuminosityGradient.getInstance().getY()].getBackgroundColor().getBlue() / 256.0f);
             }
         }
     }
