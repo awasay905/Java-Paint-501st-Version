@@ -1,11 +1,12 @@
 package uicomponents.toolbars;
 
+import helper.PaintInfo;
+import res.ResourceManager;
 import shapes.Grid;
 import uicomponents.Shortcuts;
 import uicomponents.buttons.ActiveButton;
 import uicomponents.buttons.ToggleButton;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class DrawingToolbar extends Toolbar {
@@ -16,15 +17,14 @@ public class DrawingToolbar extends Toolbar {
     private boolean shapeSelected;
     private boolean freeformSelected;
     private boolean bezierSelected;
-    private Image gridOff, gird2, grid4, gird8, grid16, grid32, grid64;
 
     public DrawingToolbar(int x, int y, int width, int height) {
         super(x, y, width, height);
         setBackgroundColor(Color.GRAY.brighter());
-        drawLine = new ToggleButton(x + 10, y + 5, 50, 70, new ImageIcon("src/res/pressed/free-stroke.png").getImage(), new ImageIcon("src/res/depressed/free-stroke.png").getImage(), "", Shortcuts.selectFreeForm, this::freeformClicked);
-        drawBezierCurve = new ToggleButton(x + 70, y + 5, 50, 70, new ImageIcon("src/res/pressed/bezier-curve.png").getImage(), new ImageIcon("src/res/depressed/bezier-curve.png").getImage(), "", Shortcuts.selectBezierCurve, this::bezierClicked);
-        drawShape = new ToggleButton(x + 130, y + 5, 50, 70, new ImageIcon("src/res/pressed/draw-shapes.png").getImage(), new ImageIcon("src/res/depressed/draw-shapes.png").getImage(), "", Shortcuts.selectShapes, this::shapeClicked);
-        changeGrid = new ActiveButton(x + 190, y + 5, 50, 70, new ImageIcon("src/res/depressed/grid/empty.png").getImage(), new ImageIcon("src/res/depressed/grid/gridOff.png").getImage(), "", Shortcuts.changeGrid, this::changeGridSize);
+        drawLine = new ToggleButton(x + 10, y + 5, 50, 70, ResourceManager.freeStrokePressed,ResourceManager.freeStrokeDepressed, "", Shortcuts.selectFreeForm, this::freeformClicked);
+        drawBezierCurve = new ToggleButton(x + 70, y + 5, 50, 70, ResourceManager.bezierCurvePressed, ResourceManager.bezierCurveDepressed, "", Shortcuts.selectBezierCurve, this::bezierClicked);
+        drawShape = new ToggleButton(x + 130, y + 5, 50, 70, ResourceManager.drawShapesPressed,ResourceManager.drawShapesDepressed, "", Shortcuts.selectShapes, this::shapeClicked);
+        changeGrid = new ActiveButton(x + 190, y + 5, 50, 70, ResourceManager.gridEmpty,ResourceManager.gridOff, "", Shortcuts.changeGrid, this::changeGridSize);
         changeGrid.setHelpText("Change Grid Size " + "(" + (char) Shortcuts.changeGrid + ") : " + Grid.getInstance().getGridSize());
         drawLine.setHelpText("Draw Freeform " + "(" + (char) Shortcuts.selectFreeForm + ")");
         drawShape.setHelpText("Draw Shapes " + "(" + (char) Shortcuts.selectShapes + ")");
@@ -33,7 +33,17 @@ public class DrawingToolbar extends Toolbar {
         add(drawShape);
         add(changeGrid);
         add(drawBezierCurve);
-        loadImages();
+        //Below are some SAM i used to help simplify the logic
+        PaintInfo.getInstance().setUpdateSelectedButton(() -> {
+            drawShape.setPressed(true);
+            drawLine.setPressed(false);
+            drawBezierCurve.setPressed(false);
+            shapeSelected = true;
+            bezierSelected = false;
+            freeformSelected = false;
+            setDetails();
+        });
+        PaintInfo.getInstance().setDepressShapeButton(this::deselectShapes);
     }
 
     @Override
@@ -49,11 +59,13 @@ public class DrawingToolbar extends Toolbar {
                 drawLine.onClick(x, y);
                 drawShape.setPressed(false);
                 drawBezierCurve.setPressed(false);
+                PaintInfo.getInstance().resetShapesClick(); //deselects the shapes in shapes toolbar
                 return;
             }
 
             if (drawShape.isClicked(x, y)) {
                 drawShape.onClick(x, y);
+                if (!drawShape.isPressed()) PaintInfo.getInstance().resetShapesClick(); //deselects the shapes in shapes toolbar if shape button is deselected
                 drawLine.setPressed(false);
                 drawBezierCurve.setPressed(false);
                 return;
@@ -63,12 +75,13 @@ public class DrawingToolbar extends Toolbar {
                 drawBezierCurve.onClick(x, y);
                 drawLine.setPressed(false);
                 drawShape.setPressed(false);
+                PaintInfo.getInstance().resetShapesClick(); //deselects the shapes in shapes toolbar
                 return;
             }
 
-            for (ToggleButton tb : getButtons()) {
-                tb.setPressed(false);
-            }
+//            for (ToggleButton tb : getButtons()) { there was no need to unlick buttons when pressing on empty space
+//                tb.setPressed(false);
+//            }
         }
     }
 
@@ -111,54 +124,50 @@ public class DrawingToolbar extends Toolbar {
 
     }
 
-    public boolean isShapeSelected() {
-        return shapeSelected;
-    }
-
-    public boolean isFreeformSelected() {
-        return freeformSelected;
-    }
-
-    public boolean isBezierSelected() {
-        return bezierSelected;
-    }
 
     private void freeformClicked() {
         freeformSelected = !freeformSelected;
         shapeSelected = false;
         bezierSelected = false;
+        setDetails();
     }
 
     private void shapeClicked() {
         shapeSelected = !shapeSelected;
         freeformSelected = false;
         bezierSelected = false;
+        setDetails();
     }
 
     private void bezierClicked() {
         bezierSelected = !bezierSelected;
         shapeSelected = false;
         freeformSelected = false;
+        setDetails();
+    }
+
+    private void deselectShapes(){
+        shapeSelected = false;
+        drawShape.setPressed(false);
+        setDetails();
+    }
+
+    private void setDetails() {
+        PaintInfo.getInstance().setLineDrawing(freeformSelected);
+        PaintInfo.getInstance().setShapeDrawing(shapeSelected);
+        PaintInfo.getInstance().setBezierDrawing(bezierSelected);
     }
 
     private void changeGridSize() {
         Grid.getInstance().increaseGridSize();
-        if (Grid.getInstance().getGridSize() == 0) getButtons().get(2).setDePress(gridOff);
-        if (Grid.getInstance().getGridSize() == 2) getButtons().get(2).setDePress(gird2);
-        if (Grid.getInstance().getGridSize() == 4) getButtons().get(2).setDePress(grid4);
-        if (Grid.getInstance().getGridSize() == 8) getButtons().get(2).setDePress(gird8);
-        if (Grid.getInstance().getGridSize() == 16) getButtons().get(2).setDePress(grid16);
-        if (Grid.getInstance().getGridSize() == 32) getButtons().get(2).setDePress(grid32);
-        if (Grid.getInstance().getGridSize() == 64) getButtons().get(2).setDePress(grid64);
+        if (Grid.getInstance().getGridSize() == 0) getButtons().get(2).setDePress(ResourceManager.gridOff);
+        if (Grid.getInstance().getGridSize() == 2) getButtons().get(2).setDePress(ResourceManager.grid2x2);
+        if (Grid.getInstance().getGridSize() == 4) getButtons().get(2).setDePress(ResourceManager.grid4x4);
+        if (Grid.getInstance().getGridSize() == 8) getButtons().get(2).setDePress(ResourceManager.grid8x8);
+        if (Grid.getInstance().getGridSize() == 16) getButtons().get(2).setDePress(ResourceManager.grid16x16);
+        if (Grid.getInstance().getGridSize() == 32) getButtons().get(2).setDePress(ResourceManager.grid32x32);
+        if (Grid.getInstance().getGridSize() == 64) getButtons().get(2).setDePress(ResourceManager.grid64x64);
     }
 
-    private void loadImages() {
-        gridOff = new ImageIcon("src/res/depressed/grid/gridOff.png").getImage().getScaledInstance(50, 70, Image.SCALE_SMOOTH);
-        gird2 = new ImageIcon("src/res/depressed/grid/grid2x2.png").getImage().getScaledInstance(50, 70, Image.SCALE_SMOOTH);
-        grid4 = new ImageIcon("src/res/depressed/grid/grid4x4.png").getImage().getScaledInstance(50, 70, Image.SCALE_SMOOTH);
-        gird8 = new ImageIcon("src/res/depressed/grid/grid8x8.png").getImage().getScaledInstance(50, 70, Image.SCALE_SMOOTH);
-        grid16 = new ImageIcon("src/res/depressed/grid/grid16x16.png").getImage().getScaledInstance(50, 70, Image.SCALE_SMOOTH);
-        grid32 = new ImageIcon("src/res/depressed/grid/grid32x32.png").getImage().getScaledInstance(50, 70, Image.SCALE_SMOOTH);
-        grid64 = new ImageIcon("src/res/depressed/grid/grid64x64.png").getImage().getScaledInstance(50, 70, Image.SCALE_SMOOTH);
-    }
+
 }

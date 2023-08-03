@@ -1,5 +1,6 @@
 package uicomponents.windows;
 
+import res.ResourceManager;
 import uicomponents.MouseListener;
 import uicomponents.buttons.LayerButton;
 import uicomponents.buttons.ToggleButton;
@@ -95,7 +96,7 @@ public class FileSelectionWindow extends Window {
             if (i == 20) {
                 i = 0; j++;
             }
-            fileNames.add(new ToggleButton(getX() + j*(width/noOfRows), getY() + getTitlebarHeight() + textboxHeight * i,width/noOfRows , textboxHeight, new ImageIcon("src/res/pressed/fileTextBox.png").getImage(), new ImageIcon("src/res/depressed/fileTextBox.png").getImage(), s, -1, new MouseListener() {
+            fileNames.add(new ToggleButton(getX() + j*(width/noOfRows), getY() + getTitlebarHeight() + textboxHeight * i,width/noOfRows , textboxHeight, ResourceManager.fileTextBoxPressed, ResourceManager.fileTextBoxDepressed, s, -1, new MouseListener() {
                 @Override
                 public void onClick() {
                     openFile(s);

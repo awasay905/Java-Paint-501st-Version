@@ -1,5 +1,6 @@
 package uicomponents.toolbars;
 
+import res.ResourceManager;
 import uicomponents.Textbox;
 import uicomponents.buttons.ColorButton;
 import uicomponents.buttons.ToggleButton;
@@ -18,9 +19,9 @@ public class Titlebar extends Toolbar {
         int y1 = y + (height - (height * 75 / 100)) / 2;
         int side = height * 75 / 100;
 
-        add(new ColorButton(x + width - height * 3, y1, side, side, new ImageIcon("empty").getImage(), new ImageIcon("empty").getImage(), Color.RED, -1, null));
-        add(new ColorButton(x + width - height * 2, y1, side, side, new ImageIcon("empty").getImage(), new ImageIcon("empty").getImage(), Color.GREEN, -1, null));
-        add(new ColorButton(x + width - height, y1, side, side, new ImageIcon("empty").getImage(), new ImageIcon("empty").getImage(), Color.BLUE, -1, null));
+        add(new ColorButton(x + width - height * 3, y1, side, side, ResourceManager.empty, ResourceManager.empty, Color.RED, -1, null));
+        add(new ColorButton(x + width - height * 2, y1, side, side, ResourceManager.empty, ResourceManager.empty, Color.GREEN, -1, null));
+        add(new ColorButton(x + width - height, y1, side, side, ResourceManager.empty, ResourceManager.empty, Color.BLUE, -1, null));
 
         for (ToggleButton tb : getButtons()) {
             tb.setHelpText("Close Window");

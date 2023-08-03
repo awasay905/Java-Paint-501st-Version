@@ -1,5 +1,6 @@
 package uicomponents;
 
+import helper.PaintInfo;
 import shapes.Point;
 import shapes.Shape;
 import shapes.*;
@@ -9,10 +10,8 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class DrawingCanvas extends Rectangle {
-    int tempx = 0, tempy = 0;
     BezierCurve bc;
-    private ArrayList<Shape> shapes;
-    private String shapeType;
+    private Shapes shapeType;
     private Color fillColor;
     private Color strokeColor;
     private int strokeSize;
@@ -25,19 +24,19 @@ public class DrawingCanvas extends Rectangle {
 
     public DrawingCanvas(int x, int y, int width, int height) {
         super(x, y, width, height);
-        shapes = new ArrayList<>();
         Grid.getInstance().setCoordinates(new Point(x, y), new Point(x + width, y + height));
     }
 
-    public void setShapes(ArrayList<Shape> shapes) {
-        this.shapes = shapes;
-    }
 
-    public void setShapeDetails(String shapeType, Color fillColor, Color strokeColor, int strokeSize) {
-        this.shapeType = shapeType;
-        this.fillColor = fillColor;
-        this.strokeColor = strokeColor;
-        this.strokeSize = strokeSize;
+    public void setShapeDetails() {
+        //All info is now taken from paintinfo
+        this.shapeType = PaintInfo.getInstance().getSelectedShape();
+        this.fillColor = PaintInfo.getInstance().getFillColor();
+        this.strokeColor = PaintInfo.getInstance().getStrokeColor();
+        this.strokeSize = PaintInfo.getInstance().getStrokeWidth();
+        this.isLineDrawing = PaintInfo.getInstance().isLineDrawing();
+        this.isShapeDrawing = PaintInfo.getInstance().isShapeDrawing();
+        this.isBezierDrawing = PaintInfo.getInstance().isBezierDrawing();
     }
 
     @Override
@@ -64,7 +63,8 @@ public class DrawingCanvas extends Rectangle {
                 bc.setTemp(new Point(e.getX(), e.getY()));
                 bc.addPoint(new Point(e.getX(), e.getY()));
                 if (bc.isComplete()) {
-                    shapes.add(bc);
+                    PaintInfo.getInstance().getShapes().add(bc);
+                    PaintInfo.getInstance().updateThumbnail();
                     bc = null;
                 }
             }
@@ -112,25 +112,9 @@ public class DrawingCanvas extends Rectangle {
         }
     }
 
-    private void drawShapes(Graphics g) {
-        for (Shape s : shapes) {
-            s.draw(g);
-        }
-    }
-
     private void addToShapes(Shape s) {
-        shapes.add(s);
+        PaintInfo.getInstance().getShapes().add(s);
+        PaintInfo.getInstance().updateThumbnail();
     }
 
-    public void setShapeDrawing(boolean shapeDrawing) {
-        isShapeDrawing = shapeDrawing;
-    }
-
-    public void setLineDrawing(boolean lineDrawing) {
-        isLineDrawing = lineDrawing;
-    }
-
-    public void setBezierDrawing(boolean bezierDrawing) {
-        isBezierDrawing = bezierDrawing;
-    }
 }

@@ -70,4 +70,7 @@ public abstract class Rectangle implements Serializable {
     public void setHeight(int height) {
         this.height = height;
     }
+    public void setX(int x) {
+        this.x = x;
+    }
 }

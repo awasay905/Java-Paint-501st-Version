@@ -1,5 +1,7 @@
 package uicomponents.toolbars;
 
+import helper.PaintInfo;
+import res.ResourceManager;
 import shapes.Shape;
 import uicomponents.Shortcuts;
 import uicomponents.buttons.ActiveButton;
@@ -8,7 +10,6 @@ import uicomponents.buttons.MenuButton;
 import uicomponents.buttons.ToggleButton;
 import uicomponents.windows.FileSelectionWindow;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,17 +26,16 @@ public class Menubar extends Toolbar {
     private final FileSelectionWindow fileSelectionWindow = new FileSelectionWindow(335, 160, 300, 500, "Saved Files");
     private LayerToolbar lt;
     private ArrayList<Shape> shapes;
-    private Stack<Shape> undoStack;
 
     public Menubar(int x, int y, int width, int height) {
         super(x, y, width, height);
 
-        MenuButton fileMenu = new MenuButton(x, y+2, 100, 36, new ImageIcon("src/res/pressed/menu-menu-button.png").getImage(), new ImageIcon("src/res/depressed/menu-menu-button.png").getImage(), "", Shortcuts.openFileMenu, () -> {});
+        MenuButton fileMenu = new MenuButton(x, y+2, 100, 36, ResourceManager.menuMenuButtonPressed,ResourceManager.menuMenuButtonDepressed, "", Shortcuts.openFileMenu, () -> {});
         fileMenu.setHelpText("Save,Open,New " + "(" + (char) Shortcuts.openFileMenu + ")");
 
-        ActiveButton saveFile = new ActiveButton(x, y+40, 100, 40, new ImageIcon("src/res/pressed/save-menu-button.png").getImage(), new ImageIcon("src/res/depressed/save-menu-button.png").getImage(), "", Shortcuts.save, this::saveFile);
-        ActiveButton openFile = new ActiveButton(x, y+80, 100, 40, new ImageIcon("src/res/pressed/open-menu-button.png").getImage(), new ImageIcon("src/res/depressed/open-menu-button.png").getImage(), "", Shortcuts.open, this::openFile);
-        ActiveButton newFile = new ActiveButton(x, y+120, 100, 40, new ImageIcon("src/res/pressed/new-menu-button.png").getImage(), new ImageIcon("src/res/depressed/new-menu-button.png").getImage(), "", Shortcuts.newFile, this::newFile);
+        ActiveButton saveFile = new ActiveButton(x, y+40, 100, 40,ResourceManager.saveMenuButtonPressed,ResourceManager.saveMenuButtonDepressed, "", Shortcuts.save, this::saveFile);
+        ActiveButton openFile = new ActiveButton(x, y+80, 100, 40, ResourceManager.openMenuButtonPressed, ResourceManager.openMenuButtonDepressed, "", Shortcuts.open, this::openFile);
+        ActiveButton newFile = new ActiveButton(x, y+120, 100, 40, ResourceManager.newMenuButtonPressed, ResourceManager.newMenuButtonDepressed, "", Shortcuts.newFile, this::newFile);
 
         saveFile.setHelpText("Save the File " + "(" + (char) Shortcuts.save + ")");
         openFile.setHelpText("Open the File " + "(" + (char) Shortcuts.open + ")");
@@ -44,12 +44,12 @@ public class Menubar extends Toolbar {
         fileMenu.add(newFile);
         fileMenu.add(openFile);
 
-        MenuButton editMenu = new MenuButton(x+102, y+2, 100, 36, new ImageIcon("src/res/pressed/edit-menu-button.png").getImage(), new ImageIcon("src/res/depressed/edit-menu-button.png").getImage(), "", Shortcuts.openEditMenu, () -> {});
+        MenuButton editMenu = new MenuButton(x+102, y+2, 100, 36, ResourceManager.editMenuButtonPressed, ResourceManager.editMenuButtonDepressed, "", Shortcuts.openEditMenu, () -> {});
         editMenu.setHelpText("Edit the drawing " + "(" + (char) Shortcuts.openEditMenu + ")");
-        ActiveButton undo = new ActiveButton(x+102, y+40, 100, 40, new ImageIcon("src/res/pressed/undo-menu-button.png").getImage(), new ImageIcon("src/res/depressed/undo-menu-button.png").getImage(), "", Shortcuts.undo, this::undo);
-        ActiveButton redo = new ActiveButton(x+102, y+80, 100, 40, new ImageIcon("src/res/pressed/redo-menu-button.png").getImage(), new ImageIcon("src/res/depressed/redo-menu-button.png").getImage(), "", Shortcuts.redo, this::redo);
-        ActiveButton undoShortcut = new ActiveButton(x+204, y+2, 36, 36, new ImageIcon("src/res/pressed/undo.png").getImage(), new ImageIcon("src/res/depressed/undo.png").getImage(), "", -1, this::undo);
-        ActiveButton redoShortcut = new ActiveButton(x+242, y+2, 36, 36, new ImageIcon("src/res/pressed/redo.png").getImage(), new ImageIcon("src/res/depressed/redo.png").getImage(), "", -1, this::redo);
+        ActiveButton undo = new ActiveButton(x+102, y+40, 100, 40, ResourceManager.undoMenuButtonPressed, ResourceManager.undoMenuButtonDepressed, "", Shortcuts.undo, this::undo);
+        ActiveButton redo = new ActiveButton(x+102, y+80, 100, 40, ResourceManager.redoMenuButtonPressed, ResourceManager.redoMenuButtonDepressed, "", Shortcuts.redo, this::redo);
+        ActiveButton undoShortcut = new ActiveButton(x+204, y+2, 36, 36, ResourceManager.undoPressed, ResourceManager.undoDepressed, "", -1, this::undo);
+        ActiveButton redoShortcut = new ActiveButton(x+242, y+2, 36, 36, ResourceManager.redoPressed, ResourceManager.redoDepressed, "", -1, this::redo);
 
         undo.setHelpText("Undo Changes " + "(" + (char) Shortcuts.undo + ")");
         undoShortcut.setHelpText("Undo Changes " + "(" + (char) Shortcuts.undo + ")");
@@ -170,11 +170,6 @@ public class Menubar extends Toolbar {
 
     private void newFile() {
         lt.reset();
-        lt.setCounter(0);
-        lt.addLayer();
-        //Added on last day, note
-        lt.setSelectedLayer((LayerButton) lt.getButtons().get(0));
-        ((LayerButton) lt.getButtons().get(0)).setPressed(true);
     }
 
     public void setLt(LayerToolbar lt) {
@@ -182,30 +177,28 @@ public class Menubar extends Toolbar {
     }
 
     public void setShapes(ArrayList<Shape> shapes) {
-        if (!shapes.equals(this.shapes)) {
-            undoStack = new Stack<>();
-        }
         this.shapes = shapes;
     }
 
     private void undo() {
-        if (shapes != null) {
-            if (undoStack == null) undoStack = new Stack<>();
-            if (shapes.size() >= 1) undoStack.add(shapes.remove(shapes.size() - 1));
+        //Undo is now handled by paintinfo
+        if (PaintInfo.getInstance().getShapes() != null && PaintInfo.getInstance().getShapes().size() >= 1) {
+            PaintInfo.getInstance().getUndoStack().add(shapes.remove(shapes.size() - 1));
+            PaintInfo.getInstance().updateThumbnail();
         }
     }
 
     private void redo() {
-        if (undoStack != null) {
-            if (undoStack.size() >= 1) {
-                if (shapes != null) {
-                    shapes.add(undoStack.pop());
-                }
+        //Redo is now handled by paintinfo
+        if (PaintInfo.getInstance().getUndoStack().size() >= 1) {
+            if ((PaintInfo.getInstance().getShapes() != null)) {
+                PaintInfo.getInstance().getShapes().add(PaintInfo.getInstance().getUndoStack().pop());
+                PaintInfo.getInstance().updateThumbnail();
             }
         }
     }
 
-    public boolean fileSelectionWindowOpen(){
+    public boolean fileSelectionWindowOpen() {
         return fileSelectionWindow.isOpen();
     }
 }

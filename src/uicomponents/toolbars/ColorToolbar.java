@@ -1,25 +1,24 @@
 package uicomponents.toolbars;
 
+import helper.PaintInfo;
+import res.ResourceManager;
 import uicomponents.Shortcuts;
 import uicomponents.buttons.ActiveButton;
 import uicomponents.buttons.ColorButton;
 import uicomponents.buttons.ToggleButton;
 import uicomponents.windows.ColorSelectionWindow;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class ColorToolbar extends Toolbar {
-    private ToggleButton selectedColor;
-    private ToggleButton colorSelector;
-    private ColorSelectionWindow cst = ColorSelectionWindow.getInstance(390, 160, 326, 400, "COLOR SELECTION");
+    private final ColorSelectionWindow cst = ColorSelectionWindow.getInstance(390, 160, 326, 400, "COLOR SELECTION");
 
     public ColorToolbar(int x, int y, int width, int height) {
         super(x, y, width, height);
         setBackgroundColor(Color.GRAY.brighter());
 
-        Image colorBoxDep = new ImageIcon("src/res/depressed/color-box.png").getImage();
-        Image colorBoxPre = new ImageIcon("src/res/pressed/color-box.png").getImage();
+        Image colorBoxDep = ResourceManager.colorBoxDepressed;
+        Image colorBoxPre = ResourceManager.colorBoxPressed;
 
         ToggleButton color1 = new ColorButton(x+130, y+5, 30, 30, colorBoxPre, colorBoxDep, Color.WHITE, Shortcuts.color0, () -> {});
         ToggleButton color2 = new ColorButton(x+165, y+5, 30, 30, colorBoxPre, colorBoxDep, Color.BLACK, Shortcuts.color1, () -> {});
@@ -43,9 +42,9 @@ public class ColorToolbar extends Toolbar {
         add(color9);
         add(color10);
 
-        ToggleButton colorSelector = new ActiveButton(x+310, y+5, 50, 70, new ImageIcon("src/res/pressed/palette.png").getImage(), new ImageIcon("src/res/depressed/palette.png").getImage(), "", Shortcuts.colorGradient, this::colorSelectorCLicked);
-        ToggleButton fillColorSelector = new ColorButton(x+10, y+5, 50, 70, new ImageIcon("src/res/pressed/fill-color.png").getImage(), new ImageIcon("src/res/depressed/fill-color.png").getImage(), Color.WHITE, -1, this::fillColorSelectorClicked);
-        ToggleButton strokeColorSelector = new ColorButton(x+70, y+5, 50, 70, new ImageIcon("src/res/pressed/stroke-color.png").getImage(), new ImageIcon("src/res/depressed/stroke-color.png").getImage(), Color.GRAY, -1, this::strokeColorSelectorClicked);
+        ToggleButton colorSelector = new ActiveButton(x + 310, y + 5, 50, 70, ResourceManager.palettePressed, ResourceManager.paletteDepressed, "", Shortcuts.colorGradient, this::colorSelectorCLicked);
+        ToggleButton fillColorSelector = new ColorButton(x + 10, y + 5, 50, 70, ResourceManager.fillColorPressed, ResourceManager.fillColorDepressed, Color.WHITE, -1, () -> {});
+        ToggleButton strokeColorSelector = new ColorButton(x + 70, y + 5, 50, 70, ResourceManager.strokeColorPressed, ResourceManager.strokeColorDepressed, Color.GRAY, -1, () -> {});
 
         add(colorSelector);
         add(fillColorSelector);
@@ -95,76 +94,41 @@ public class ColorToolbar extends Toolbar {
     public void onClick(int x, int y) {
         cst.onClick(x, y);
 
-        boolean wasButtonPressed = false;
+        ToggleButton fillButton = getButtons().get(11);
+        ToggleButton strokeButton = getButtons().get(12);
 
         for (int i = 0; i < 10; i++) {
             ToggleButton toggleButton = getButtons().get(i);
-            if (toggleButton.isClicked(x, y)) {
-                if (toggleButton.isPressed()) {
-                    wasButtonPressed = true;
-                }
-                resetColorClicks();
-                toggleButton.onClick(x, y);
-
-                toggleButton.setPressed(!wasButtonPressed);
-                if (toggleButton.isPressed()) {
-                    selectedColor = toggleButton;
-                    setColorSelectorColor();
-                } else selectedColor = null;
-
-                return;
+            if (toggleButton.isClicked(x, y) ) {
+                setColor(toggleButton.getBackgroundColor());
             }
         }
 
-        wasButtonPressed = false;
-
-        for (int i = 11; i < 13; i++) {
-            ToggleButton toggleButton = getButtons().get(i);
-            if (toggleButton.isClicked(x, y)) {
-                if (toggleButton.isPressed()) {
-                    wasButtonPressed = true;
-                }
-                resetColorSelectorClicks();
-
-                toggleButton.onClick(x, y);
-                toggleButton.setPressed(!wasButtonPressed);
-                if (toggleButton.isPressed()) {
-                    resetColorClicks();
-                    colorSelector = toggleButton;
-                    selectedColor = toggleButton;
-                } else {
-                    colorSelector = null;
-                    selectedColor = null;
-                }
-            }
-        }
+        fillButton.onClick(x, y);
+        strokeButton.onClick(x, y);
+        //The below code ensures that only one of the button is pressed at a time
+        if (fillButton.isClicked(x, y) && fillButton.isPressed() && strokeButton.isPressed()) strokeButton.setPressed(false);
+        else if (strokeButton.isClicked(x, y) && strokeButton.isPressed() && fillButton.isPressed()) fillButton.setPressed(false);
 
         getButtons().get(10).onClick(x, y);
 
-
-        if (cst.isOpen() && cst.set().isClicked(x, y) && selectedColor != null) {
-            selectedColor.setBackgroundColor(cst.getSelectedColor());
+        if (cst.isOpen() && cst.set().isClicked(x, y)) {
+            setColor(cst.getSelectedColor());
         }
     }
 
-    private void resetColorClicks() {
-        selectedColor = null;
-        for (int i = 0; i < 10; i++) {
-            getButtons().get(i).setPressed(false);
-        }
-    }
+    private void setColor(Color color) {
+        ToggleButton fillButton = getButtons().get(11);
+        ToggleButton strokeButton = getButtons().get(12);
 
-    private void resetColorSelectorClicks() {
-        colorSelector = null;
-        for (int i = 11; i < 13; i++) {
-            getButtons().get(i).setPressed(false);
-        }
-    }
-
-    private void setColorSelectorColor() {
-        if (colorSelector != null) {
-            colorSelector.setBackgroundColor(selectedColor.getBackgroundColor());
-            resetColorSelectorClicks();
+        if (fillButton.isPressed()) {
+            fillButton.setBackgroundColor(color);
+            PaintInfo.getInstance().setFillColor(color); //uses the paintinfo singleton to help transeferring color to another class
+            fillButton.setPressed(false);
+        } else if (strokeButton.isPressed()) {
+            strokeButton.setBackgroundColor(color);
+            PaintInfo.getInstance().setStrokeColor(color);  //uses the paintinfo singleton to help transeferring color to another class
+            strokeButton.setPressed(false);
         }
     }
 
@@ -179,19 +143,4 @@ public class ColorToolbar extends Toolbar {
             cst.close();
         }
     }
-
-    private void fillColorSelectorClicked() {
-    }
-
-    private void strokeColorSelectorClicked() {
-    }
-
-    public Color getFillColor() {
-        return getButtons().get(11).getBackgroundColor();
-    }
-
-    public Color getStrokeColor() {
-        return getButtons().get(12).getBackgroundColor();
-    }
-
 }

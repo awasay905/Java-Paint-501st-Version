@@ -1,5 +1,6 @@
 package uicomponents.buttons;
 
+import res.ResourceManager;
 import shapes.Shape;
 import uicomponents.MouseListener;
 import uicomponents.Textbox;
@@ -22,7 +23,7 @@ public class LayerButton extends ToggleButton {
     private Textbox title;
 
     public LayerButton(int x, int y, int width, int height, String layerName) {
-        super(x, y, width, height, new ImageIcon("empty").getImage(), new ImageIcon("empty").getImage(), "", -1, null);
+        super(x, y, width, height, ResourceManager.empty,ResourceManager.empty, "", -1, null);
         isActive = false;
         shapes = new ArrayList<>();
         this.layerName = layerName;
@@ -38,7 +39,7 @@ public class LayerButton extends ToggleButton {
         imgWidth = (int) (imgHeight * 1.5);
         thumbnail = shapesToImage();
 
-        visibility = new ToggleButton(x + height / 2 - 30 / 2, y + height / 2 - 30 / 2, 30, 30, new ImageIcon("src/res/depressed/visible.png").getImage(), new ImageIcon("src/res/pressed/not-visible.png").getImage(), "", -1, (MouseListener) () -> {
+        visibility = new ToggleButton(x + height / 2 - 30 / 2, y + height / 2 - 30 / 2, 30, 30,ResourceManager.visibleDepressed, ResourceManager.notVisiblePressed, "", -1, (MouseListener) () -> {
         });
         isVisible = true;
         visibility.setPressed(true);
@@ -60,8 +61,8 @@ public class LayerButton extends ToggleButton {
     @Override
     public void draw(Graphics g) {
         if (visibility.getCurrent() == null){
-            visibility.setOnPress(new ImageIcon("src/res/depressed/visible.png").getImage().getScaledInstance(30,30,Image.SCALE_SMOOTH));
-            visibility.setDePress(new ImageIcon("src/res/pressed/not-visible.png").getImage().getScaledInstance(30,30,Image.SCALE_SMOOTH));
+            visibility.setOnPress(ResourceManager.visibleDepressed.getScaledInstance(30,30,Image.SCALE_SMOOTH));
+            visibility.setDePress(ResourceManager.notVisiblePressed.getScaledInstance(30,30,Image.SCALE_SMOOTH));
             visibility.setPressed(visibility.isPressed());
         }
         g.setColor(Color.LIGHT_GRAY);

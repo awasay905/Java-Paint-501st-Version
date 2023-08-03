@@ -1,13 +1,13 @@
 package uicomponents.toolbars;
 
-import shapes.Shape;
+import helper.PaintInfo;
+import res.ResourceManager;
 import uicomponents.Shortcuts;
 import uicomponents.Textbox;
 import uicomponents.buttons.ActiveButton;
 import uicomponents.buttons.LayerButton;
 import uicomponents.buttons.ToggleButton;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -18,8 +18,10 @@ public class LayerToolbar extends Toolbar {
     private int counter;
     public void open(LayerToolbar lt){
         this.selectedLayer = lt.selectedLayer;
+        PaintInfo.getInstance().setShapes(selectedLayer.getShapes()); //sets the selected layer to the one of opened file
         this.counter = lt.counter;
         this.setToggleButtons(lt.getButtons());
+        PaintInfo.getInstance().updateThumbnail(); //updates the thumbnail when opening file
     }
 
     public LayerToolbar(int x, int y, int width, int height) {
@@ -29,10 +31,10 @@ public class LayerToolbar extends Toolbar {
         title = new Textbox(x, y, width, 30, "Layers", Color.BLACK, false);
         counter = 0;
 
-        ActiveButton addLayer = new ActiveButton(x + 10, y + 5, 20, 20, new ImageIcon("src/res/pressed/add-layer.png").getImage(), new ImageIcon("src/res/depressed/add-layer.png").getImage(), "", Shortcuts.addLayer, this::addLayer);
-        ActiveButton removeLayer = new ActiveButton(x + 10 + 5 + 20, y + 5, 20, 20, new ImageIcon("src/res/pressed/remove-layer.png").getImage(), new ImageIcon("src/res/depressed/remove-layer.png").getImage(), "", Shortcuts.removeLayer, this::removeLayer);
-        ActiveButton moveUp = new ActiveButton(x + width - 10 - 20, y + 5, 20, 20, new ImageIcon("src/res/pressed/layer-up.png").getImage(), new ImageIcon("src/res/depressed/layer-up.png").getImage(), "", Shortcuts.moveLayerUp, this::moveUp);
-        ActiveButton moveDown = new ActiveButton(x + width - 10 - 20 - 5 - 20, y + 5, 20, 20, new ImageIcon("src/res/pressed/layer-down.png").getImage(), new ImageIcon("src/res/depressed/layer-down.png").getImage(), "", Shortcuts.moveLayerDown, this::moveDown);
+        ActiveButton addLayer = new ActiveButton(x + 10, y + 5, 20, 20, ResourceManager.addLayerPressed,ResourceManager.addLayerDepressed, "", Shortcuts.addLayer, this::addLayer);
+        ActiveButton removeLayer = new ActiveButton(x + 10 + 5 + 20, y + 5, 20, 20, ResourceManager.removeLayerPressed, ResourceManager.removeLayerDepressed, "", Shortcuts.removeLayer, this::removeLayer);
+        ActiveButton moveUp = new ActiveButton(x + width - 10 - 20, y + 5, 20, 20,ResourceManager.layerUpPressed, ResourceManager.layerUpDepressed, "", Shortcuts.moveLayerUp, this::moveUp);
+        ActiveButton moveDown = new ActiveButton(x + width - 10 - 20 - 5 - 20, y + 5, 20, 20, ResourceManager.layerDownPressed, ResourceManager.layerDownDepressed, "", Shortcuts.moveLayerDown, this::moveDown);
 
         addLayer.setHelpText("Add Layer " + "(" + (char) Shortcuts.addLayer + ")");
         removeLayer.setHelpText("Remove Layer " + "(" + (char) Shortcuts.removeLayer + ")");
@@ -46,6 +48,8 @@ public class LayerToolbar extends Toolbar {
 
         addLayer();
         selectedLayer = (LayerButton) getButtons().get(0);
+        PaintInfo.getInstance().setShapes(selectedLayer.getShapes());  //initializes the layer
+        PaintInfo.getInstance().setUpdateThumbnail(this::updateThumbnail);  //set the thumbnail function
     }
 
     public int getCounter() {
@@ -58,6 +62,10 @@ public class LayerToolbar extends Toolbar {
 
     public void reset() {
         setToggleButtons(new ArrayList<>());
+        setCounter(0);
+        addLayer();
+        selectedLayer = (LayerButton) getButtons().get(0);
+        PaintInfo.getInstance().setShapes(selectedLayer.getShapes());
     }
 
     public void setSelectedLayer(LayerButton selectedLayer) {
@@ -113,6 +121,7 @@ public class LayerToolbar extends Toolbar {
         if (selectedLayer.isActive()) {
             getButtons().remove(selectedLayer);
             selectedLayer = (LayerButton) getButtons().get(0);
+            PaintInfo.getInstance().setShapes(selectedLayer.getShapes()); //when removing a layer, the top most becomes selected
             updateY();
         }
     }
@@ -154,12 +163,13 @@ public class LayerToolbar extends Toolbar {
     public void onClick(int x, int y) {
         layerActionButtons.onClick(x, y);
         for (ToggleButton b : getButtons()) {
-            if (b.isClicked(x, y)) {
+            if (b.isClicked(x, y)) { //If a layer is clicked, it makes it active and sets it as selected layer
                 b.onClick(x, y);
                 selectedLayer = (LayerButton) b;
+                PaintInfo.getInstance().setShapes(selectedLayer.getShapes());  //makes the clicked layer selected
                 selectedLayer.setActive(b.isPressed());
-                if (!b.isPressed()) selectedLayer = (LayerButton) getButtons().get(0);
-            } else {
+               // if (!b.isPressed()) selectedLayer = (LayerButton) getButtons().get(0); //there will be no unselected layer
+            } else { //It sets all other layers to false.
                 b.setPressed(false);
                 ((LayerButton) b).setActive(false);
             }
@@ -170,10 +180,6 @@ public class LayerToolbar extends Toolbar {
     public void shortcutKeyPressed(int keyCode) {
         super.shortcutKeyPressed(keyCode);
         layerActionButtons.shortcutKeyPressed(keyCode);
-    }
-
-    public ArrayList<Shape> getList() {
-        return selectedLayer.getShapes();
     }
 
     public void updateThumbnail(){
