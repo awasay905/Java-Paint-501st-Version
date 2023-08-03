@@ -1,12 +1,12 @@
 package uicomponents.toolbars;
 
+import helper.PaintInfo;
 import res.ResourceManager;
 import shapes.Grid;
 import uicomponents.Shortcuts;
 import uicomponents.buttons.ActiveButton;
 import uicomponents.buttons.ToggleButton;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class DrawingToolbar extends Toolbar {
@@ -33,6 +33,17 @@ public class DrawingToolbar extends Toolbar {
         add(drawShape);
         add(changeGrid);
         add(drawBezierCurve);
+        //Below are some SAM i used to help simplify the logic
+        PaintInfo.getInstance().setUpdateSelectedButton(() -> {
+            drawShape.setPressed(true);
+            drawLine.setPressed(false);
+            drawBezierCurve.setPressed(false);
+            shapeSelected = true;
+            bezierSelected = false;
+            freeformSelected = false;
+            setDetails();
+        });
+        PaintInfo.getInstance().setDepressShapeButton(this::deselectShapes);
     }
 
     @Override
@@ -48,11 +59,13 @@ public class DrawingToolbar extends Toolbar {
                 drawLine.onClick(x, y);
                 drawShape.setPressed(false);
                 drawBezierCurve.setPressed(false);
+                PaintInfo.getInstance().resetShapesClick(); //deselects the shapes in shapes toolbar
                 return;
             }
 
             if (drawShape.isClicked(x, y)) {
                 drawShape.onClick(x, y);
+                if (!drawShape.isPressed()) PaintInfo.getInstance().resetShapesClick(); //deselects the shapes in shapes toolbar if shape button is deselected
                 drawLine.setPressed(false);
                 drawBezierCurve.setPressed(false);
                 return;
@@ -62,12 +75,13 @@ public class DrawingToolbar extends Toolbar {
                 drawBezierCurve.onClick(x, y);
                 drawLine.setPressed(false);
                 drawShape.setPressed(false);
+                PaintInfo.getInstance().resetShapesClick(); //deselects the shapes in shapes toolbar
                 return;
             }
 
-            for (ToggleButton tb : getButtons()) {
-                tb.setPressed(false);
-            }
+//            for (ToggleButton tb : getButtons()) { there was no need to unlick buttons when pressing on empty space
+//                tb.setPressed(false);
+//            }
         }
     }
 
@@ -110,34 +124,38 @@ public class DrawingToolbar extends Toolbar {
 
     }
 
-    public boolean isShapeSelected() {
-        return shapeSelected;
-    }
-
-    public boolean isFreeformSelected() {
-        return freeformSelected;
-    }
-
-    public boolean isBezierSelected() {
-        return bezierSelected;
-    }
 
     private void freeformClicked() {
         freeformSelected = !freeformSelected;
         shapeSelected = false;
         bezierSelected = false;
+        setDetails();
     }
 
     private void shapeClicked() {
         shapeSelected = !shapeSelected;
         freeformSelected = false;
         bezierSelected = false;
+        setDetails();
     }
 
     private void bezierClicked() {
         bezierSelected = !bezierSelected;
         shapeSelected = false;
         freeformSelected = false;
+        setDetails();
+    }
+
+    private void deselectShapes(){
+        shapeSelected = false;
+        drawShape.setPressed(false);
+        setDetails();
+    }
+
+    private void setDetails() {
+        PaintInfo.getInstance().setLineDrawing(freeformSelected);
+        PaintInfo.getInstance().setShapeDrawing(shapeSelected);
+        PaintInfo.getInstance().setBezierDrawing(bezierSelected);
     }
 
     private void changeGridSize() {

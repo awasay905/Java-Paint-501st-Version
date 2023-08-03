@@ -1,5 +1,6 @@
 package swingComponents;
 
+import helper.PaintInfo;
 import shapes.Grid;
 import uicomponents.DrawingCanvas;
 import uicomponents.toolbars.*;
@@ -70,6 +71,7 @@ public class Board extends JPanel implements ActionListener, MouseInputListener 
         layerToolbar = new LayerToolbar(880, 120, 200, 600);
         layerToolbar.setBackgroundColor(Color.LIGHT_GRAY.darker());
         toolbars.add(layerToolbar);
+        menubar.setLt(layerToolbar);
 
         //Canvas
         drawingCanvas = new DrawingCanvas(0, 120, BOARD_WIDTH - 200, BOARD_HEIGHT - 120);
@@ -116,7 +118,8 @@ public class Board extends JPanel implements ActionListener, MouseInputListener 
     public void actionPerformed(ActionEvent e) {
         Toolkit.getDefaultToolkit().sync();
         repaint();
-        menubar.setLt(layerToolbar);
+        // why? no idea
+        // menubar.setLt(layerToolbar);
     }
 
     @Override
@@ -138,17 +141,13 @@ public class Board extends JPanel implements ActionListener, MouseInputListener 
             drawingCanvas.mouseClicked(e);
         }
         //drawingCanvas.mouseClicked(e);
-        layerToolbar.updateThumbnail();
+        //layerToolbar.updateThumbnail(); no need to update cz now its done through paintinfo
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        menubar.setShapes(layerToolbar.getList());
-        drawingCanvas.setShapes(layerToolbar.getList());
-        drawingCanvas.setShapeDetails(shapesToolbar.getSelectedShape(), colorToolbar.getFillColor(), colorToolbar.getStrokeColor(), shapesToolbar.getStrokeSize());
-        drawingCanvas.setLineDrawing(drawingToolbar.isFreeformSelected());
-        drawingCanvas.setShapeDrawing(drawingToolbar.isShapeSelected());
-        drawingCanvas.setBezierDrawing(drawingToolbar.isBezierSelected());
+        menubar.setShapes(PaintInfo.getInstance().getShapes());
+        drawingCanvas.setShapeDetails();
         //Checks if color selection widnow is open
         if (((ColorToolbar) toolbars.get(4)).colorWindowOpen()) {
             return;
@@ -161,7 +160,7 @@ public class Board extends JPanel implements ActionListener, MouseInputListener 
             return;
         }
         drawingCanvas.mousePressed(e);
-        layerToolbar.updateThumbnail();
+        //layerToolbar.updateThumbnail(); //no need to update cuz now its done by paintifo
     }
 
     @Override
@@ -177,7 +176,7 @@ public class Board extends JPanel implements ActionListener, MouseInputListener 
             return;
         }
         drawingCanvas.mouseReleased(e);
-        layerToolbar.updateThumbnail();
+        //layerToolbar.updateThumbnail(); //no need to update cuz now its done by paintifo
     }
 
     @Override

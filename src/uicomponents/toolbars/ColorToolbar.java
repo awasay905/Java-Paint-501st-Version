@@ -1,5 +1,6 @@
 package uicomponents.toolbars;
 
+import helper.PaintInfo;
 import res.ResourceManager;
 import uicomponents.Shortcuts;
 import uicomponents.buttons.ActiveButton;
@@ -122,9 +123,11 @@ public class ColorToolbar extends Toolbar {
 
         if (fillButton.isPressed()) {
             fillButton.setBackgroundColor(color);
+            PaintInfo.getInstance().setFillColor(color); //uses the paintinfo singleton to help transeferring color to another class
             fillButton.setPressed(false);
         } else if (strokeButton.isPressed()) {
             strokeButton.setBackgroundColor(color);
+            PaintInfo.getInstance().setStrokeColor(color);  //uses the paintinfo singleton to help transeferring color to another class
             strokeButton.setPressed(false);
         }
     }
@@ -140,13 +143,4 @@ public class ColorToolbar extends Toolbar {
             cst.close();
         }
     }
-
-    public Color getFillColor() {
-        return getButtons().get(11).getBackgroundColor();
-    }
-
-    public Color getStrokeColor() {
-        return getButtons().get(12).getBackgroundColor();
-    }
-
 }

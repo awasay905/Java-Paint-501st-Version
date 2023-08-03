@@ -1,6 +1,8 @@
 package uicomponents.toolbars;
 
+import helper.PaintInfo;
 import res.ResourceManager;
+import shapes.Shapes;
 import uicomponents.Shortcuts;
 import uicomponents.buttons.ActiveButton;
 import uicomponents.buttons.ToggleButton;
@@ -9,12 +11,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ShapesToolbar extends Toolbar {
-    private String selectedShape;
     private int strokeSize;
 
     public ShapesToolbar(int x, int y, int width, int height) {
         super(x, y, width, height);
-        selectedShape = "";
+        PaintInfo.getInstance().setSelectedShape(null);
         strokeSize = 5;
         setBackgroundColor(Color.GRAY.brighter());
 
@@ -42,7 +43,8 @@ public class ShapesToolbar extends Toolbar {
         ToggleButton stokeWidthSelector = new ActiveButton(x+120, y+5, 50, 70,ResourceManager.strokeWidthPressed, ResourceManager.strokeWidthDepressed, "", Shortcuts.changeStroke, this::strokeWidthClicked);
         add(stokeWidthSelector);
 
-        stokeWidthSelector.setHelpText("Stroke size" + "(" + (char) Shortcuts.changeStroke + ")" + ": " + getStrokeSize());
+        stokeWidthSelector.setHelpText("Stroke size" + "(" + (char) Shortcuts.changeStroke + ")" + ": " + strokeSize);
+        PaintInfo.getInstance().setResetShapesClick(()-> resetShapesClicks(null));
     }
 
     @Override
@@ -61,6 +63,9 @@ public class ShapesToolbar extends Toolbar {
                         resetShapesClicks(null);
                         shapeButton.onClick(x, y);
                         return;
+                    } else {
+                        //if a shape button is depressed, the drawshape button also depresses
+                        PaintInfo.getInstance().depressShapeButton();
                     }
                 }
             }
@@ -76,17 +81,18 @@ public class ShapesToolbar extends Toolbar {
     }
 
     private void resetShapesClicks(ToggleButton tb) {
-        selectedShape = "";
+        PaintInfo.getInstance().setSelectedShape(null);
         for (int i = 0; i < 6; i++) {
             if (getButtons().get(i).equals(tb)) continue;
             getButtons().get(i).setPressed(false);
         }
+        PaintInfo.getInstance().depressShapeButton(); //after all shape button is depressed, the draeshapes also depresses
     }
 
     public void shortcutKeyPressed(int keyCode) {
         if (getButtons().get(6).shortcutKeyPressed(keyCode)){
             //When stroke size button is clicked
-            getButtons().get(6).setHelpText("Stroke size" + "(" + (char) Shortcuts.changeStroke + ")" + ": " + getStrokeSize());
+            getButtons().get(6).setHelpText("Stroke size" + "(" + (char) Shortcuts.changeStroke + ")" + ": " + strokeSize);
             return;
         }
         for (ToggleButton b : getButtons()) {
@@ -99,46 +105,41 @@ public class ShapesToolbar extends Toolbar {
     }
 
     private void circleClicked() {
-        selectedShape = "CIRCLE";
+        PaintInfo.getInstance().setSelectedShape(Shapes.CIRCLE);
     }
 
     private void rectangleClicked() {
-        selectedShape = "RECTANGLE";
+        PaintInfo.getInstance().setSelectedShape(Shapes.RECTANGLE);
     }
 
     private void rightAngleTriangleClicked() {
-        selectedShape = "RIGHT-TRIANGLE";
+        PaintInfo.getInstance().setSelectedShape(Shapes.RIGHT_TRIANGLE);
     }
 
     private void hexagonClicked() {
-        selectedShape = "HEXAGON";
+        PaintInfo.getInstance().setSelectedShape(Shapes.HEXAGON);
     }
 
     private void pentagramClicked() {
-        selectedShape = "PENTAGRAM";
+        PaintInfo.getInstance().setSelectedShape(Shapes.PENTAGRAM);
     }
 
     private void equilateralTriangleClicked() {
-        selectedShape = "EQUILATERAL-TRIANGLE";
+        PaintInfo.getInstance().setSelectedShape(Shapes.EQUILATERAL_TRIANGLE);
     }
 
     private void strokeWidthClicked() {
         if (strokeSize == 0) {
             strokeSize = 5;
-            getButtons().get(6).setHelpText("Stroke size" + "(" + (char) Shortcuts.changeStroke + ")" + ": " + getStrokeSize());
+            PaintInfo.getInstance().setStrokeWidth(strokeSize);
+            getButtons().get(6).setHelpText("Stroke size" + "(" + (char) Shortcuts.changeStroke + ")" + ": " + strokeSize);
             return;
         }
         strokeSize += 5;
         strokeSize %= 40;
-        getButtons().get(6).setHelpText("Stroke size" + "(" + (char) Shortcuts.changeStroke + ")" + ": " + getStrokeSize());
+        PaintInfo.getInstance().setStrokeWidth(strokeSize);
+        getButtons().get(6).setHelpText("Stroke size" + "(" + (char) Shortcuts.changeStroke + ")" + ": " + strokeSize);
     }
 
-    public String getSelectedShape() {
-        return selectedShape;
-    }
-
-    public int getStrokeSize() {
-        return strokeSize;
-    }
 
 }

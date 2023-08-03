@@ -1,5 +1,6 @@
 package uicomponents.toolbars;
 
+import helper.PaintInfo;
 import res.ResourceManager;
 import shapes.Shape;
 import uicomponents.Shortcuts;
@@ -9,7 +10,6 @@ import uicomponents.buttons.MenuButton;
 import uicomponents.buttons.ToggleButton;
 import uicomponents.windows.FileSelectionWindow;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,7 +26,6 @@ public class Menubar extends Toolbar {
     private final FileSelectionWindow fileSelectionWindow = new FileSelectionWindow(335, 160, 300, 500, "Saved Files");
     private LayerToolbar lt;
     private ArrayList<Shape> shapes;
-    private Stack<Shape> undoStack;
 
     public Menubar(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -171,11 +170,6 @@ public class Menubar extends Toolbar {
 
     private void newFile() {
         lt.reset();
-        lt.setCounter(0);
-        lt.addLayer();
-        //Added on last day, note
-        lt.setSelectedLayer((LayerButton) lt.getButtons().get(0));
-        ((LayerButton) lt.getButtons().get(0)).setPressed(true);
     }
 
     public void setLt(LayerToolbar lt) {
@@ -183,30 +177,28 @@ public class Menubar extends Toolbar {
     }
 
     public void setShapes(ArrayList<Shape> shapes) {
-        if (!shapes.equals(this.shapes)) {
-            undoStack = new Stack<>();
-        }
         this.shapes = shapes;
     }
 
     private void undo() {
-        if (shapes != null) {
-            if (undoStack == null) undoStack = new Stack<>();
-            if (shapes.size() >= 1) undoStack.add(shapes.remove(shapes.size() - 1));
+        //Undo is now handled by paintinfo
+        if (PaintInfo.getInstance().getShapes() != null && PaintInfo.getInstance().getShapes().size() >= 1) {
+            PaintInfo.getInstance().getUndoStack().add(shapes.remove(shapes.size() - 1));
+            PaintInfo.getInstance().updateThumbnail();
         }
     }
 
     private void redo() {
-        if (undoStack != null) {
-            if (undoStack.size() >= 1) {
-                if (shapes != null) {
-                    shapes.add(undoStack.pop());
-                }
+        //Redo is now handled by paintinfo
+        if (PaintInfo.getInstance().getUndoStack().size() >= 1) {
+            if ((PaintInfo.getInstance().getShapes() != null)) {
+                PaintInfo.getInstance().getShapes().add(PaintInfo.getInstance().getUndoStack().pop());
+                PaintInfo.getInstance().updateThumbnail();
             }
         }
     }
 
-    public boolean fileSelectionWindowOpen(){
+    public boolean fileSelectionWindowOpen() {
         return fileSelectionWindow.isOpen();
     }
 }

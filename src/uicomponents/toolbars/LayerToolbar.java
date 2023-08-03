@@ -1,14 +1,13 @@
 package uicomponents.toolbars;
 
+import helper.PaintInfo;
 import res.ResourceManager;
-import shapes.Shape;
 import uicomponents.Shortcuts;
 import uicomponents.Textbox;
 import uicomponents.buttons.ActiveButton;
 import uicomponents.buttons.LayerButton;
 import uicomponents.buttons.ToggleButton;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -19,8 +18,10 @@ public class LayerToolbar extends Toolbar {
     private int counter;
     public void open(LayerToolbar lt){
         this.selectedLayer = lt.selectedLayer;
+        PaintInfo.getInstance().setShapes(selectedLayer.getShapes()); //sets the selected layer to the one of opened file
         this.counter = lt.counter;
         this.setToggleButtons(lt.getButtons());
+        PaintInfo.getInstance().updateThumbnail(); //updates the thumbnail when opening file
     }
 
     public LayerToolbar(int x, int y, int width, int height) {
@@ -47,6 +48,8 @@ public class LayerToolbar extends Toolbar {
 
         addLayer();
         selectedLayer = (LayerButton) getButtons().get(0);
+        PaintInfo.getInstance().setShapes(selectedLayer.getShapes());  //initializes the layer
+        PaintInfo.getInstance().setUpdateThumbnail(this::updateThumbnail);  //set the thumbnail function
     }
 
     public int getCounter() {
@@ -59,6 +62,10 @@ public class LayerToolbar extends Toolbar {
 
     public void reset() {
         setToggleButtons(new ArrayList<>());
+        setCounter(0);
+        addLayer();
+        selectedLayer = (LayerButton) getButtons().get(0);
+        PaintInfo.getInstance().setShapes(selectedLayer.getShapes());
     }
 
     public void setSelectedLayer(LayerButton selectedLayer) {
@@ -114,6 +121,7 @@ public class LayerToolbar extends Toolbar {
         if (selectedLayer.isActive()) {
             getButtons().remove(selectedLayer);
             selectedLayer = (LayerButton) getButtons().get(0);
+            PaintInfo.getInstance().setShapes(selectedLayer.getShapes()); //when removing a layer, the top most becomes selected
             updateY();
         }
     }
@@ -158,6 +166,7 @@ public class LayerToolbar extends Toolbar {
             if (b.isClicked(x, y)) { //If a layer is clicked, it makes it active and sets it as selected layer
                 b.onClick(x, y);
                 selectedLayer = (LayerButton) b;
+                PaintInfo.getInstance().setShapes(selectedLayer.getShapes());  //makes the clicked layer selected
                 selectedLayer.setActive(b.isPressed());
                // if (!b.isPressed()) selectedLayer = (LayerButton) getButtons().get(0); //there will be no unselected layer
             } else { //It sets all other layers to false.
@@ -171,10 +180,6 @@ public class LayerToolbar extends Toolbar {
     public void shortcutKeyPressed(int keyCode) {
         super.shortcutKeyPressed(keyCode);
         layerActionButtons.shortcutKeyPressed(keyCode);
-    }
-
-    public ArrayList<Shape> getList() {
-        return selectedLayer.getShapes();
     }
 
     public void updateThumbnail(){
