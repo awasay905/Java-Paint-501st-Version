@@ -45,7 +45,7 @@ Choose what you want to change (fill or stroke) then click on the pre-defined co
 
 
 # Bugs and Issues
-- Redo gets lost when you change layers
+- Redo gets lost when you change layers (fixed)
 - Some minor bugs which shouldn't effect working
 - If you find some then feel free to open issue
 
