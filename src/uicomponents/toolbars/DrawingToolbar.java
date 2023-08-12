@@ -9,15 +9,53 @@ import uicomponents.buttons.ToggleButton;
 
 import java.awt.*;
 
+/**
+ * The class represengintg the drawing toolbar.
+ */
 public class DrawingToolbar extends Toolbar {
+    /**
+     * The button which enables/disables to draw free stroke line
+     */
     private final ToggleButton drawLine;
+    /**
+     * The button which enables/disables to draw shapes. Useless.
+     * TODO: Remove it
+     */
     private final ToggleButton drawShape;
+    /**
+     * The button which enables/disables and changes size for grid
+     */
     private final ToggleButton changeGrid;
+    /**
+     * The button which enables/disables to draw free cubic bezier curves
+     * TODO: Somehow make it for Nth Bezier Curve
+     */
     private final ToggleButton drawBezierCurve;
+    /**
+     * Tells if shape button is clicked. Useless as well
+     * TODO: Directly use the onPress of drawShape Button
+     */
     private boolean shapeSelected;
+    /**
+     * Tells if free drawing button is clicked. Useless as well
+     * TODO: Directly use the onPress of free drawing Button
+     */
     private boolean freeformSelected;
+    /**
+     * Tells if bezier curve button is clicked. Useless as well
+     * TODO: Directly use the onPress of bezier Button
+     */
     private boolean bezierSelected;
 
+    /**
+     * Constructor. It intializes the drawing toolbar and its button.
+     * It also sets the tooltip text for the buttons. And links some function
+     * to the PaintInfo singelton
+     * @param x      the x coordinate of the menubar according to java graphics coordinates
+     * @param y      the y coordinate of the menubar according to java graphics coordinates
+     * @param width  the width of the menubar
+     * @param height the height of the menubar
+     */
     public DrawingToolbar(int x, int y, int width, int height) {
         super(x, y, width, height);
         setBackgroundColor(Color.GRAY.brighter());
@@ -33,7 +71,7 @@ public class DrawingToolbar extends Toolbar {
         add(drawShape);
         add(changeGrid);
         add(drawBezierCurve);
-        //Below are some SAM i used to help simplify the logic
+        //Below are some SAM I used to help simplify the logic
         PaintInfo.getInstance().setUpdateSelectedButton(() -> {
             drawShape.setPressed(true);
             drawLine.setPressed(false);
@@ -46,9 +84,16 @@ public class DrawingToolbar extends Toolbar {
         PaintInfo.getInstance().setDepressShapeButton(this::deselectShapes);
     }
 
+    /**
+     * The onClick Method. It is very simple. It just checks if the buttons are pressed and calls their onClick.
+     * For the Grid button, it changes the grid size
+     * For the rest, it makes sure that only one button is pressed at a time by declicking others
+     * @param x
+     * @param y
+     */
     @Override
     public void onClick(int x, int y) {
-        if (isClicked(x, y)) {
+        //if (isClicked(x, y)) {
             if (changeGrid.isClicked(x, y)) {
                 changeGrid.onClick(x, y);
                 changeGrid.setHelpText("Change Grid Size " + "(" + (char) Shortcuts.changeGrid + ") : " + Grid.getInstance().getGridSize());
@@ -82,7 +127,7 @@ public class DrawingToolbar extends Toolbar {
 //            for (ToggleButton tb : getButtons()) { there was no need to unlick buttons when pressing on empty space
 //                tb.setPressed(false);
 //            }
-        }
+       // }
     }
 
     @Override
@@ -124,21 +169,33 @@ public class DrawingToolbar extends Toolbar {
 
     }
 
-
+    /**
+     * The function which is called when the free drawing button is clicked
+     * it declicks the other buttons, sets the boolean, and
+     * also updates the details in the paintInfo singelton
+     */
     private void freeformClicked() {
         freeformSelected = !freeformSelected;
         shapeSelected = false;
         bezierSelected = false;
         setDetails();
     }
-
+    /**
+     * The function which is called when the shapes button is clicked
+     * it declicks the other buttons, sets the boolean, and
+     * also updates the details in the paintInfo singelton
+     */
     private void shapeClicked() {
         shapeSelected = !shapeSelected;
         freeformSelected = false;
         bezierSelected = false;
         setDetails();
     }
-
+    /**
+     * The function which is called when the bezeir curve button is clicked
+     * it declicks the other buttons, sets the boolean, and
+     * also updates the details in the paintInfo singelton
+     */
     private void bezierClicked() {
         bezierSelected = !bezierSelected;
         shapeSelected = false;
@@ -146,18 +203,30 @@ public class DrawingToolbar extends Toolbar {
         setDetails();
     }
 
+    /**
+     * A function which depresses the shape drawing button.
+     * It is passed to singleTon paintINfo as a SAI,
+     * so that when we depress indiviidaul shape button from shapes toolbar, this button
+     * also gets depressed
+     */
     private void deselectShapes(){
         shapeSelected = false;
         drawShape.setPressed(false);
         setDetails();
     }
 
+    /**
+     * A function which sets the details in the paintInfo singelton
+     */
     private void setDetails() {
         PaintInfo.getInstance().setLineDrawing(freeformSelected);
         PaintInfo.getInstance().setShapeDrawing(shapeSelected);
         PaintInfo.getInstance().setBezierDrawing(bezierSelected);
     }
 
+    /**
+     * This function changes the grid size, while also updating the picture shown on the button
+     */
     private void changeGridSize() {
         Grid.getInstance().increaseGridSize();
         if (Grid.getInstance().getGridSize() == 0) getButtons().get(2).setDePress(ResourceManager.gridOff);

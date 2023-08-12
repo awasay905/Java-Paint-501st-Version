@@ -6,14 +6,44 @@ import uicomponents.Rectangle;
 import java.awt.*;
 import java.io.Serializable;
 
+/**
+ * The most used component in this app, the toggle button.
+ * It is a button which can be pressed and depressed,
+ * and pressing the button calls the mouseListener added to the button
+ */
 public class ToggleButton extends Rectangle implements HoverActions, Serializable {
+    /**
+     * The image to be shown when the button is in pressed state
+     */
     private transient Image onPress;
+    /**
+     * The image to be shown when the button is in depressed state
+     */
     private transient Image dePress;
+    /**
+     * The text to show on top of the image
+     */
     private final String text;
+    /**
+     * The text size for the text to be shown
+     */
     private int textSize;
+    /**
+     * The shortcut key associated with the button
+     */
     private final int shortcutKey;
+    /**
+     * A variable to keep track of the pressed state fo the button
+     */
     private boolean isPressed;
+    /**
+     * The image which is drawn when the button is drawn.
+     * It changes between onPress and dePress images when the button is clicked
+     */
     private transient Image current;
+    /**
+     * The color fof the text drawn on the button
+     */
     private Color textColor;
     private MouseListener mouseListener;
     private String helpText;

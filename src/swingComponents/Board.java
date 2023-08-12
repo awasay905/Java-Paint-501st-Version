@@ -1,8 +1,8 @@
 package swingComponents;
 
-import helper.PaintInfo;
 import shapes.Grid;
 import uicomponents.DrawingCanvas;
+import uicomponents.Message;
 import uicomponents.toolbars.*;
 
 import javax.swing.*;
@@ -12,8 +12,8 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 public class Board extends JPanel implements ActionListener, MouseInputListener {
-    private final int BOARD_WIDTH = 1080;
-    private final int BOARD_HEIGHT = 720;
+    public static final int BOARD_WIDTH = 1080;
+    public static final int BOARD_HEIGHT = 720;
     private final int DELAY = 25;
     Menubar menubar;
     DrawingToolbar drawingToolbar;
@@ -71,7 +71,7 @@ public class Board extends JPanel implements ActionListener, MouseInputListener 
         layerToolbar = new LayerToolbar(880, 120, 200, 600);
         layerToolbar.setBackgroundColor(Color.LIGHT_GRAY.darker());
         toolbars.add(layerToolbar);
-        menubar.setLt(layerToolbar);
+        menubar.setLayerToolbar(layerToolbar);
 
         //Canvas
         drawingCanvas = new DrawingCanvas(0, 120, BOARD_WIDTH - 200, BOARD_HEIGHT - 120);
@@ -95,6 +95,7 @@ public class Board extends JPanel implements ActionListener, MouseInputListener 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        Message.drawMessage(g);
         drawingCanvas.draw(g);
         layerToolbar.drawShapes(g);
         Grid.getInstance().draw(g);
@@ -118,65 +119,60 @@ public class Board extends JPanel implements ActionListener, MouseInputListener 
     public void actionPerformed(ActionEvent e) {
         Toolkit.getDefaultToolkit().sync();
         repaint();
-        // why? no idea
-        // menubar.setLt(layerToolbar);
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
         //Checks if color selection window is open
-        if (((ColorToolbar) toolbars.get(4)).colorWindowOpen()) {
-            toolbars.get(4).onClick(e.getX(), e.getY());
+        if (colorToolbar.colorWindowOpen()) {
+            colorToolbar.onClick(e.getX(), e.getY());
             return;
         }
 
         if (!menubar.isOpen()) {
             for (Toolbar tb : toolbars) {
+                if (drawingCanvas.isBezierDrawing() && tb.isClicked(e.getX(), e.getY())) {
+                    Message.showMessage("Warning!, Bezier is not finished drawing", 3);
+                    return;
+                }
                 tb.onClick(e.getX(), e.getY());
             }
         }
-
         menubar.onClick(e.getX(), e.getY());
-        if (!menubar.fileSelectionWindowOpen()) {
+
+        if (!menubar.isFileSelectionWindowOpen()) {
             drawingCanvas.mouseClicked(e);
         }
-        //drawingCanvas.mouseClicked(e);
-        //layerToolbar.updateThumbnail(); no need to update cz now its done through paintinfo
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        menubar.setShapes(PaintInfo.getInstance().getShapes());
-        drawingCanvas.setShapeDetails();
         //Checks if color selection widnow is open
-        if (((ColorToolbar) toolbars.get(4)).colorWindowOpen()) {
+        if (colorToolbar.colorWindowOpen()) {
             return;
         }
-
+        if (menubar.isFileSelectionWindowOpen()) {
+            return;
+        }
         if (menubar.isOpen()) {
             return;
         }
-        if (menubar.fileSelectionWindowOpen()) {
-            return;
-        }
         drawingCanvas.mousePressed(e);
-        //layerToolbar.updateThumbnail(); //no need to update cuz now its done by paintifo
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         //Checks if color selection widnow is open
-        if (((ColorToolbar) toolbars.get(4)).colorWindowOpen()) {
+        if (colorToolbar.colorWindowOpen()) {
+            return;
+        }
+        if (menubar.isFileSelectionWindowOpen()) {
             return;
         }
         if (menubar.isOpen()) {
             return;
         }
-        if (menubar.fileSelectionWindowOpen()) {
-            return;
-        }
         drawingCanvas.mouseReleased(e);
-        //layerToolbar.updateThumbnail(); //no need to update cuz now its done by paintifo
     }
 
     @Override
@@ -189,16 +185,13 @@ public class Board extends JPanel implements ActionListener, MouseInputListener 
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (((ColorToolbar) toolbars.get(4)).colorWindowOpen()) {
-            toolbars.get(4).onClick(e.getX(), e.getY());
+        //It is ok to call mouseDrag for colorGradient
+        if (colorToolbar.colorWindowOpen()) {
+            colorToolbar.colorGradientDrag(e.getX(), e.getY());
             return;
         }
-        if (menubar.isOpen()) {
-            return;
-        }
-        if (menubar.fileSelectionWindowOpen()) {
-            return;
-        } else drawingCanvas.mouseDragged(e);
+        //Don't drag when menubar or fileSelectionWindow is open
+        if (!menubar.isOpen() && !menubar.isFileSelectionWindowOpen()) drawingCanvas.mouseDragged(e);
 
     }
 

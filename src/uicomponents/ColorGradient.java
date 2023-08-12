@@ -4,7 +4,7 @@ import uicomponents.buttons.ColorButton;
 
 import java.awt.*;
 
-public class ColorGradient {
+public class ColorGradient implements Runnable{
     private static ColorGradient instance;
     private final ColorButton[][] gradient;
     private int x;
@@ -77,5 +77,10 @@ public class ColorGradient {
 
     public ColorButton[][] getColorButtons() {
         return gradient;
+    }
+
+    @Override
+    public void run() {
+
     }
 }

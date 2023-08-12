@@ -1,10 +1,13 @@
 package swingComponents;
 
 import res.ResourceManager;
+import uicomponents.ColorGradient;
+import uicomponents.windows.ColorSelectionWindow;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.concurrent.ForkJoinPool;
 
 public class SwingTimerEx extends JFrame {
 
@@ -18,6 +21,7 @@ public class SwingTimerEx extends JFrame {
             SwingTimerEx ex = new SwingTimerEx();
             ex.setVisible(true);
         });
+        ColorSelectionWindow.getInstance(390, 160, 326, 400, "COLOR SELECTION");
     }
 
     private void initUI() {

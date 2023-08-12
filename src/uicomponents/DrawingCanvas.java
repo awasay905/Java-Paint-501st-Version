@@ -77,8 +77,14 @@ public class DrawingCanvas extends Rectangle {
         }
     }
 
+    public boolean isBezierDrawing() {
+        if (bc == null) return false;
+        return !bc.isComplete();
+    }
+
     public void mousePressed(MouseEvent e) {
         if (isClicked(e.getX(), e.getY())) {
+            setShapeDetails();
             x1 = e.getX();
             y1 = e.getY();
             if (isShapeDrawing)

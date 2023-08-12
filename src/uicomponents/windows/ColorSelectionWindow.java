@@ -86,6 +86,21 @@ public class ColorSelectionWindow extends Window {
     }
 
 
+    public void onDrag(int x, int y){
+        if (isOpen()) {
+            if (ColorGradient.getInstance().gradientIsClicked(x, y)) {
+                selectedColor = ColorGradient.getInstance().getColorButtons()[x - ColorGradient.getInstance().getX()][y - ColorGradient.getInstance().getY()].getBackgroundColor();
+
+                c1.setText(selectedColor.getRed() + "");
+                c2.setText(selectedColor.getGreen() + "");
+                c3.setText(selectedColor.getBlue() + "");
+            }
+
+            if (LuminosityGradient.getInstance().luminosityIsClicked(x, y)) {
+                ColorGradient.getInstance().generateColor(LuminosityGradient.getInstance().getColorButtons()[y - LuminosityGradient.getInstance().getY()].getBackgroundColor().getBlue() / 256.0f);
+            }
+        }
+    }
     @Override
     public void onClick(int x, int y) {
         if (isOpen()) {
